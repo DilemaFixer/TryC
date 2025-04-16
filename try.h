@@ -38,9 +38,7 @@ static inline void lmessage(LogLevel level, const char* format, ...) {
 #define lunimp(...) lmessage(LEVEL_UNIMPLEMENTED, "Not implemented: " __VA_ARGS__)
 // -----------------------
 
-#ifndef
- #define MAX_TRY_COUNT 20
-#endif
+#define MAX_TRY_COUNT 20
 
 typedef struct error {
     const char *message;
@@ -94,11 +92,6 @@ error *get_error();
 
 #define trow(message) do { \
     error *e = new_error(message, __FILE__, __LINE__, 0); \
-    trow_error(e); \
-} while (0)
-
-#define trow_with_offset(message , offset) do { \
-    error *e = new_error(message, __FILE__, __LINE__, offset); \
     trow_error(e); \
 } while (0)
 
