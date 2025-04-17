@@ -1,8 +1,8 @@
 #include "try.h"
 #include <setjmp.h>
 
-error *new_error(const char *message, const char *file_name, size_t line,
-                 size_t offset) {
+error *new_error(const char *message, size_t code, const char *file_name,
+                 size_t line, size_t offset) {
   if (!message)
     lfatal("Can't create error with null ptr on message string");
   if (!file_name)
@@ -16,6 +16,7 @@ error *new_error(const char *message, const char *file_name, size_t line,
   e->file_name = file_name;
   e->line = line;
   e->offset = offset;
+  e->code = code;
 
   return e;
 }

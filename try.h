@@ -38,11 +38,14 @@ static inline void lmessage(LogLevel level, const char* format, ...) {
 #define lunimp(...) lmessage(LEVEL_UNIMPLEMENTED, "Not implemented: " __VA_ARGS__)
 // -----------------------
 
+#ifndef MAX_TRY_COUNT
 #define MAX_TRY_COUNT 20
+#endif
 
 typedef struct error {
     const char *message;
     const char *file_name;
+    size_t code;
     size_t line;
     size_t offset;
 } error;
@@ -51,7 +54,7 @@ static jmp_buf catches[MAX_TRY_COUNT];
 static size_t current_catch = 0;
 static error *current_error = NULL;
 
-error *new_error(const char *message, const char* file_name, size_t line, size_t offset);
+error *new_error(const char *message, const size_t code, const char* file_name,size_t line, size_t offset);
 void free_error(error *e);
 void trow_error(error *e);
 error *get_error();
@@ -90,9 +93,17 @@ error *get_error();
     current_catch--; \
 } while (0)
 
-#define trow(message) do { \
-    error *e = new_error(message, __FILE__, __LINE__, 0); \
+#define trow(message , code) do { \
+    error *e = new_error(message, code, __FILE__, __LINE__, 0); \
     trow_error(e); \
 } while (0)
+
+#define error_go_top(error) trow_error(error);
+#define log_error() do { \
+ error* err = get_error(); \
+ fprintf(stderr, "error: %s at %s:%zu:%zu\n", \
+                err->message, err->file_name, err->line, err->offset); \
+ free_error(err); \
+} while (0);
 
 #endif
