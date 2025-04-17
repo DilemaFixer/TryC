@@ -91,14 +91,25 @@ error *get_error();
 
 #define tryend } \
     current_catch--; \
-} while (0)
+} while (0);
 
 #define trow(message , code) do { \
     error *e = new_error(message, code, __FILE__, __LINE__, 0); \
     trow_error(e); \
+} while (0);
+
+#define trow_with_offset(message, code, offset) do { \
+    error *e = new_error(message, code, __FILE__, __LINE__, offset); \
+    trow_error(e); \
 } while (0)
 
 #define error_go_top(error) trow_error(error);
+
+#define get_code(code_var) do { \
+    error *er = get_error(); \
+    size_t code_var = er->code; \
+} while (0);
+
 #define log_error() do { \
  error* err = get_error(); \
  fprintf(stderr, "error: %s at %s:%zu:%zu\n", \
